@@ -157,7 +157,7 @@ extern "C"
 		ret.bpp = info.bits / 8;
 
 		uint8_t* data = malloc(header.size - 122);
-		fread(data, 1, header.size - 122, fp);
+		fread(data, header.size - 122, 1, fp);
 
 		Decode(data, header.size - 122, info.bits);
 
