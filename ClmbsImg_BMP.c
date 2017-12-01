@@ -9,54 +9,54 @@ extern "C"
 {
 #endif
 
-	int ReadBytes(void* data, size_t size, FILE* fp)
+	static int ReadBytes(void* data, size_t size, FILE* fp)
 	{
 		if (fread(data, size, 1, fp) != 1) return 0;
 		return 1;
 	}
 
-	int WriteBytes(const void* data, size_t size, FILE* fp)
+	static int WriteBytes(const void* data, size_t size, FILE* fp)
 	{
 		if (fwrite(data, size, 1, fp) != 1) return 0;
 		return 1;
 	}
 
-	int ReadUint8(uint8_t* data, FILE* fp)
+	static int ReadUint8(uint8_t* data, FILE* fp)
 	{
 		return ReadBytes(data, sizeof(uint8_t), fp);
 	}
 
-	int WriteUint8(const uint8_t* data, FILE* fp)
+	static int WriteUint8(const uint8_t* data, FILE* fp)
 	{
 		return WriteBytes(data, sizeof(uint8_t), fp);
 	}
 
-	int ReadUint16(uint16_t* data, FILE* fp)
+	static int ReadUint16(uint16_t* data, FILE* fp)
 	{
 		return ReadBytes(data, sizeof(uint16_t), fp);
 	}
 
-	int WriteUint16(const uint16_t* data, FILE* fp)
+	static int WriteUint16(const uint16_t* data, FILE* fp)
 	{
 		return WriteBytes(data, sizeof(uint16_t), fp);
 	}
 
-	int ReadUint32(uint32_t* data, FILE* fp)
+	static int ReadUint32(uint32_t* data, FILE* fp)
 	{
 		return ReadBytes(data, sizeof(uint32_t), fp);
 	}
 
-	int WriteUint32(const uint32_t* data, FILE* fp)
+	static int WriteUint32(const uint32_t* data, FILE* fp)
 	{
 		return WriteBytes(data, sizeof(uint32_t), fp);
 	}
 
-	int ReadInt32(int32_t* data, FILE* fp)
+	static int ReadInt32(int32_t* data, FILE* fp)
 	{
 		return ReadBytes(data, sizeof(int32_t), fp);
 	}
 
-	int WriteInt32(const int32_t* data, FILE* fp)
+	static int WriteInt32(const int32_t* data, FILE* fp)
 	{
 		return WriteBytes(data, sizeof(int32_t), fp);
 	}
@@ -92,7 +92,7 @@ extern "C"
 		uint8_t a; //Alpha channel
 	} BMP_PALETTE;
 
-	bool ReadHeader(BMP_HEADER* header, FILE* fp)
+	static bool ReadHeader(BMP_HEADER* header, FILE* fp)
 	{
 		if (header == NULL || fp == NULL) return false;
 
@@ -105,7 +105,7 @@ extern "C"
 		return true;
 	}
 
-	bool WriteHeader(BMP_HEADER header, FILE* fp)
+	static bool WriteHeader(BMP_HEADER header, FILE* fp)
 	{
 		if (fp == NULL) return false;
 
@@ -118,7 +118,7 @@ extern "C"
 		return true;
 	}
 
-	bool ReadInfo(BMP_INFO* info, FILE* fp)
+	static bool ReadInfo(BMP_INFO* info, FILE* fp)
 	{
 		if (info == NULL || fp == NULL) return false;
 
@@ -137,7 +137,7 @@ extern "C"
 		return true;
 	}
 
-	bool WriteInfo(BMP_INFO info, FILE* fp)
+	static bool WriteInfo(BMP_INFO info, FILE* fp)
 	{
 		if (fp == NULL) return false;
 
@@ -156,7 +156,7 @@ extern "C"
 		return true;
 	}
 
-	bool ReadPalette(BMP_PALETTE* palette, FILE* fp)
+	static bool ReadPalette(BMP_PALETTE* palette, FILE* fp)
 	{
 		if (palette == NULL || fp == NULL) return false;
 
@@ -168,7 +168,7 @@ extern "C"
 		return true;
 	}
 
-	bool Decode24(uint8_t* data, size_t size)
+	static bool Decode24(uint8_t* data, size_t size)
 	{
 		uint8_t bgr[3];
 
@@ -186,7 +186,7 @@ extern "C"
 		return true;
 	}
 
-	bool Decode(uint8_t* data, size_t size, size_t bits)
+	static bool Decode(uint8_t* data, size_t size, size_t bits)
 	{
 		switch (bits)
 		{
