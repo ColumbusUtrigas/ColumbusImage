@@ -1,2 +1,2 @@
 # ColumbusImage
-Simple C++ Library for image loading
+Simple C/C++ Library for image loading
