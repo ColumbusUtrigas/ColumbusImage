@@ -134,6 +134,10 @@ extern "C"
 		if (!ReadUint32(&info->colors, fp)) return false;
 		if (!ReadUint32(&info->important_colors, fp)) return false;
 
+		uint8_t* empty = (uint8_t*)malloc(68);
+		ReadBytes(empty, 68, fp);
+		free(empty);
+
 		return true;
 	}
 
@@ -227,12 +231,10 @@ extern "C"
 		if (!ReadHeader(&header, fp)) return ret;
 		if (!ReadInfo(&info, fp)) return ret;
 
-		fseek(fp, 122, SEEK_CUR);
+		uint8_t* data = malloc(header.size - 68);
+		fread(data, header.size - 68, 1, fp);
 
-		uint8_t* data = malloc(header.size - 122);
-		fread(data, header.size - 122, 1, fp);
-
-		Decode(data, header.size - 122, info.bits);
+		Decode(data, header.size - 68, info.bits);
 
 		ret.w = info.width;
 		ret.h = info.height;
