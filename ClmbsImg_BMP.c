@@ -14,9 +14,20 @@ extern "C"
 		return 1;
 	}
 
+	int WriteBytes(const void* data, size_t size, FILE* fp)
+	{
+		if (fwrite(data, size, 1, fp) != 1) return 0;
+		return 1;
+	}
+
 	int ReadUint8(uint8_t* data, FILE* fp)
 	{
 		return ReadBytes(data, sizeof(uint8_t), fp);
+	}
+
+	int WriteUint8(const uint8_t* data, FILE* fp)
+	{
+		return WriteBytes(data, sizeof(uint8_t), fp);
 	}
 
 	int ReadUint16(uint16_t* data, FILE* fp)
@@ -24,14 +35,29 @@ extern "C"
 		return ReadBytes(data, sizeof(uint16_t), fp);
 	}
 
+	int WriteUint16(const uint16_t* data, FILE* fp)
+	{
+		return WriteBytes(data, sizeof(uint16_t), fp);
+	}
+
 	int ReadUint32(uint32_t* data, FILE* fp)
 	{
 		return ReadBytes(data, sizeof(uint32_t), fp);
 	}
 
+	int WriteUint32(const uint32_t* data, FILE* fp)
+	{
+		return WriteBytes(data, sizeof(uint32_t), fp);
+	}
+
 	int ReadInt32(int32_t* data, FILE* fp)
 	{
 		return ReadBytes(data, sizeof(int32_t), fp);
+	}
+
+	int WriteInt32(const int32_t* data, FILE* fp)
+	{
+		return WriteBytes(data, sizeof(int32_t), fp);
 	}
 
 	typedef struct
@@ -44,12 +70,17 @@ extern "C"
 
 	typedef struct
 	{
-		uint32_t infosize; //Size of info struct
+		uint32_t infosize; //Size of info struct (40 bytes)
 		int32_t width; //Width of image
 		int32_t height; //Height of image
 		uint16_t planes; //Should be 1
 		uint16_t bits; //Bits per pixel (1, 4, 8, 16, 24, 32)
 		uint32_t compression; //0 = none, 1 = 8-bit RLE, 2 = 4-bit RLE
+		uint32_t size_data; //The image size
+		uint32_t hres; //Horizontal resolution (pixel per meter)
+		uint32_t vres; //Vertical resolution (pixel per meter)
+		uint32_t colors; //Number of palette colors
+		uint32_t important_colors; //Number of important colors;
 	} BMP_INFO;
 
 	typedef struct
@@ -73,6 +104,19 @@ extern "C"
 		return true;
 	}
 
+	bool WriteHeader(BMP_HEADER header, FILE* fp)
+	{
+		if (fp == NULL) return false;
+
+		if (!WriteUint8(&header.magic[0], fp)) return false;
+		if (!WriteUint8(&header.magic[1], fp)) return false;
+		if (!WriteUint32(&header.size, fp)) return false;
+		if (!WriteUint32(&header.unused, fp)) return false;
+		if (!WriteUint32(&header.offset, fp)) return false;
+
+		return true;
+	}
+
 	bool ReadInfo(BMP_INFO* info, FILE* fp)
 	{
 		if (info == NULL || fp == NULL) return false;
@@ -83,6 +127,30 @@ extern "C"
 		if (!ReadUint16(&info->planes, fp)) return false;
 		if (!ReadUint16(&info->bits, fp)) return false;
 		if (!ReadUint32(&info->compression, fp)) return false;
+		if (!ReadUint32(&info->size_data, fp)) return false;
+		if (!ReadUint32(&info->hres, fp)) return false;
+		if (!ReadUint32(&info->vres, fp)) return false;
+		if (!ReadUint32(&info->colors, fp)) return false;
+		if (!ReadUint32(&info->important_colors, fp)) return false;
+
+		return true;
+	}
+
+	bool WriteInfo(BMP_INFO info, FILE* fp)
+	{
+		if (fp == NULL) return false;
+
+		if (!WriteUint32(&info.infosize, fp)) return false;
+		if (!WriteInt32(&info.width, fp)) return false;
+		if (!WriteInt32(&info.height, fp)) return false;
+		if (!WriteUint16(&info.planes, fp)) return false;
+		if (!WriteUint16(&info.bits, fp)) return false;
+		if (!WriteUint32(&info.compression, fp)) return false;
+		if (!WriteUint32(&info.size_data, fp)) return false;
+		if (!WriteUint32(&info.hres, fp)) return false;
+		if (!WriteUint32(&info.vres, fp)) return false;
+		if (!WriteUint32(&info.colors, fp)) return false;
+		if (!WriteUint32(&info.important_colors, fp)) return false;
 
 		return true;
 	}
@@ -156,6 +224,8 @@ extern "C"
 		ret.h = info.height;
 		ret.bpp = info.bits / 8;
 
+		fseek(fp, 122, SEEK_CUR);
+
 		uint8_t* data = malloc(header.size - 122);
 		fread(data, header.size - 122, 1, fp);
 
@@ -166,9 +236,46 @@ extern "C"
 		return ret;
 	}
 
+	bool ClmbsImg_SaveBMP(const char* file, ClmbsImg_Data data)
+	{
+		FILE* fp = fopen(file, "wb");
+		if (fp == NULL) return false;
+
+		BMP_HEADER header;
+		BMP_INFO info;
+
+		header.magic[0] = 'B';
+		header.magic[1] = 'M';
+		header.size = data.w * data.h * data.bpp + 54;
+		header.unused = 0;
+		header.offset = 54;
+
+		info.infosize = 40;
+		info.width = data.w;
+		info.height = data.h;
+		info.planes = 1;
+		info.bits = data.bpp * 8;
+		info.compression = 0;
+		info.size_data = data.w * data.h * data.bpp;
+		info.hres = 0;
+		info.vres = 0;
+		info.colors = 0;
+		info.important_colors = 0;
+
+		if (!WriteHeader(header, fp)) return false;
+		if (!WriteInfo(info, fp)) return false;
+
+		fwrite(data.data, data.w * data.h * data.bpp, 1, fp);
+
+		fclose(fp);
+
+		return true;
+	}
+
 #ifdef __cplusplus
 }
 #endif
+
 
 
 
