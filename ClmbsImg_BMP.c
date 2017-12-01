@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
+#include <string.h>
 
 #ifdef __cplusplus
 extern "C"
@@ -169,11 +170,17 @@ extern "C"
 
 	bool Decode24(uint8_t* data, size_t size)
 	{
+		uint8_t bgr[3];
+
 		for (int i = 0; i < size; i += 3)
 		{
-			data[i + 0] = data[i + 2];
-			data[i + 1] = data[i + 0];
-			data[i + 2] = data[i - 2];
+			bgr[0] = data[i + 0];
+			bgr[1] = data[i + 1];
+			bgr[2] = data[i + 2];
+
+			data[i + 0] = bgr[2];
+			data[i + 1] = bgr[1];
+			data[i + 2] = bgr[0];
 		}
 
 		return true;
@@ -220,16 +227,17 @@ extern "C"
 		if (!ReadHeader(&header, fp)) return ret;
 		if (!ReadInfo(&info, fp)) return ret;
 
-		ret.w = info.width;
-		ret.h = info.height;
-		ret.bpp = info.bits / 8;
-
 		fseek(fp, 122, SEEK_CUR);
 
 		uint8_t* data = malloc(header.size - 122);
 		fread(data, header.size - 122, 1, fp);
 
 		Decode(data, header.size - 122, info.bits);
+
+		ret.w = info.width;
+		ret.h = info.height;
+		ret.bpp = info.bits / 8;
+		ret.data = data;
 
 		fclose(fp);
 
@@ -265,9 +273,15 @@ extern "C"
 		if (!WriteHeader(header, fp)) return false;
 		if (!WriteInfo(info, fp)) return false;
 
-		fwrite(data.data, data.w * data.h * data.bpp, 1, fp);
+		uint8_t* buffer = (uint8_t*)malloc(data.w * data.h * data.bpp);
+		memcpy(buffer, data.data, data.w * data.h * data.bpp);
+
+		Decode(buffer, data.w * data.h * data.bpp, data.bpp * 8);
+		
+		fwrite(buffer, data.w * data.h * data.bpp, 1, fp);
 
 		fclose(fp);
+		free(buffer);
 
 		return true;
 	}
