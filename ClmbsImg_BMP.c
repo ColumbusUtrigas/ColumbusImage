@@ -1,20 +1,17 @@
-#pragma once
+#include "ColumbusImage.h"
+#include <stdio.h>
+#include <stdlib.h>
 
-#include <cstdlib>
-#include <cstdio>
-#include "ImageTypes.h"
-
-namespace Columbus
+#ifdef __cplusplus
+extern "C"
 {
+#endif
 
-	bool IsBMP(const char* file);
-	ImageData LoadBMP(const char* file);
-
-	bool IsBMP(const char* file)
+	bool ClmbsImg_IsBMP(const char* file)
 	{
 		FILE* fp = fopen(file, "rb");
 		if (fp == NULL)
-			{ return false; }
+			return false;
 
 		unsigned char magic[2];
 		fread(magic, sizeof(magic), 1, fp);
@@ -26,9 +23,9 @@ namespace Columbus
 			return false;
 	}
 
-	ImageData LoadBMP(const char* file)
+	ClmbsImg_Data ClmbsImg_LoadBMP(const char* file)
 	{
-		ImageData ret;
+		ClmbsImg_Data ret;
 
 	    FILE* fp = fopen(file, "rb");
 	    if (fp == NULL) return ret;
@@ -40,7 +37,7 @@ namespace Columbus
 	    int height = *(int*)&info[22];
 
 	    int size = 3 * width * height;
-	    unsigned char* data = new unsigned char[size];
+	    unsigned char* data = malloc(sizeof(unsigned char) * size);
 	    fread(data, sizeof(unsigned char), size, fp);
 	    fclose(fp);
 
@@ -59,7 +56,12 @@ namespace Columbus
 		return ret;
 	}
 
+#ifdef __cplusplus
 }
+#endif
+
+
+
 
 
 
