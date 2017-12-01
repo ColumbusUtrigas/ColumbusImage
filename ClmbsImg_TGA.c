@@ -68,10 +68,10 @@ extern "C"
 		uint8_t image_type; //Image Type
 		/*
 		0  -  No image data included.
-	    1  -  Uncompressed, color-mapped images.
-	    2  -  Uncompressed, RGB images.
-	    3  -  Uncompressed, black and white images.
-	    9  -  Runlength encoded color-mapped images.
+		1  -  Uncompressed, color-mapped images.
+		2  -  Uncompressed, RGB images.
+		3  -  Uncompressed, black and white images.
+		9  -  Runlength encoded color-mapped images.
 		10  -  Runlength encoded RGB images.
 		11  -  Compressed, black and white images.
 		32  -  Compressed color-mapped data, using Huffman, Delta, and runlength encoding.
