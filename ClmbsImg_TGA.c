@@ -178,9 +178,12 @@ extern "C"
 		size_t size = tga.width * tga.height * tga.bits / 8;
 
 		uint8_t* buffer = (uint8_t*)malloc(size);
-		fread(buffer, size, 1, fp);
 
-		Decode(buffer, size, tga.bits);
+		if (tga.image_type == 2)
+		{
+			fread(buffer, size, 1, fp);
+			Decode(buffer, size, tga.bits);
+		}
 
 		ret.w = tga.width;
 		ret.h = tga.height;
