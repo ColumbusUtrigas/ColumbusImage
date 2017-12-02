@@ -203,7 +203,6 @@ extern "C"
 		memcpy(buffer, data.data, data.w * data.h * data.bpp);
 		Decode(buffer, data.w * data.h * data.bpp, data.bpp * 8);
 
-		//fwrite(header, sizeof(uint8_t), 18, fp);
 		WriteHeader(tga, fp);
 		fwrite(buffer, data.w * data.h * data.bpp, 1, fp);
 
