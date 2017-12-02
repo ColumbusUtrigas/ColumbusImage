@@ -11,6 +11,9 @@ extern "C"
 		if (ClmbsImg_IsBMP(file))
 			return ClmbsImg_LoadBMP(file);
 
+		if (ClmbsImg_IsTGA(file))
+			return ClmbsImg_LoadTGA(file);
+
 		return err;
 	}
 

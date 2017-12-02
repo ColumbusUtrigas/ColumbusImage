@@ -89,15 +89,6 @@ extern "C"
 		uint8_t image_descriptor;
 	} TGA_HEADER;
 
-	typedef struct
-	{
-		TGA_HEADER header;
-
-		uint8_t* image_identification_field;
-		uint8_t* color_map_data;
-		uint8_t* image_data;
-	} TGA_FILE;
-
 	static bool ReadHeader(TGA_HEADER* header, FILE* fp)
 	{
 		if (header == NULL || fp == NULL) return false;
@@ -114,6 +105,26 @@ extern "C"
 		if (!ReadUint16(&header->height, fp)) return false;
 		if (!ReadUint8(&header->bits, fp)) return false;
 		if (!ReadUint8(&header->image_descriptor, fp)) return false;
+
+		return true;
+	}
+
+	static bool WriteHeader(TGA_HEADER header, FILE* fp)
+	{
+		if (fp == NULL) return false;
+
+		if (!WriteUint8(&header.idlen, fp)) return false;
+		if (!WriteUint8(&header.color_map_type, fp)) return false;
+		if (!WriteUint8(&header.image_type, fp)) return false;
+		if (!WriteUint16(&header.color_map_origin, fp)) return false;
+		if (!WriteUint16(&header.color_map_length, fp)) return false;
+		if (!WriteUint8(&header.color_map_entry_size, fp)) return false;
+		if (!WriteUint16(&header.x_origin, fp)) return false;
+		if (!WriteUint16(&header.y_origin, fp)) return false;
+		if (!WriteUint16(&header.width, fp)) return false;
+		if (!WriteUint16(&header.height, fp)) return false;
+		if (!WriteUint8(&header.bits, fp)) return false;
+		if (!WriteUint8(&header.image_descriptor, fp)) return false;
 
 		return true;
 	}
@@ -160,9 +171,21 @@ extern "C"
 		FILE* fp = fopen(file, "rb");
 		if (fp == NULL) return ret;
 
-		TGA_FILE tga;
+		TGA_HEADER tga;
 
-		if (!ReadHeader(&tga.header, fp)) return ret;
+		if (!ReadHeader(&tga, fp)) return ret;
+
+		size_t size = tga.width * tga.height * tga.bits / 8;
+
+		uint8_t* buffer = (uint8_t*)malloc(size);
+		fread(buffer, size, 1, fp);
+
+		Decode(buffer, size, tga.bits);
+
+		ret.w = tga.width;
+		ret.h = tga.height;
+		ret.bpp = tga.bits / 8;
+		ret.data = buffer;
 
 		fclose(fp);
 		return ret;
@@ -173,19 +196,15 @@ extern "C"
 		FILE* fp = fopen(file, "wb");
 		if (fp == NULL) return false;
 
-		uint8_t header[18]={0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+		TGA_HEADER tga = {0, 0, 2, 0, 0, 0, 0, 0, data.w, data.h, data.bpp * 8, 0};
 
-		header[12] = data.w & 0xFF;
-		header[13] = (data.w >> 8) & 0xFF;
-		header[14] = (data.h) & 0xFF; 
-		header[15] = (data.h >> 8)  & 0xFF;
-		header[16] = 24;
 
 		uint8_t* buffer = (uint8_t*)malloc(data.w * data.h * data.bpp);
 		memcpy(buffer, data.data, data.w * data.h * data.bpp);
 		Decode(buffer, data.w * data.h * data.bpp, data.bpp * 8);
 
-		fwrite(header, sizeof(uint8_t), 18, fp);
+		//fwrite(header, sizeof(uint8_t), 18, fp);
+		WriteHeader(tga, fp);
 		fwrite(buffer, data.w * data.h * data.bpp, 1, fp);
 
 		fclose(fp);
