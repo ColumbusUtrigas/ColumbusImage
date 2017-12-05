@@ -21,8 +21,8 @@ extern "C"
 		fclose(fp);
 
 		if (magic[1] == 'P' &&
-			magic[2] == 'N' &&
-			magic[3] == 'G') return true;
+		    magic[2] == 'N' &&
+		    magic[3] == 'G') return true;
 		else return false;
 	}
 
