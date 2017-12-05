@@ -78,30 +78,12 @@ extern "C"
 		return true;
 	}
 
-	static bool Decode24(uint8_t* data, size_t size)
-	{
-		uint8_t bgr[3];
-
-		for (int i = 0; i < size; i += 3)
-		{
-			bgr[0] = data[i + 0];
-			bgr[1] = data[i + 1];
-			bgr[2] = data[i + 2];
-
-			data[i + 0] = bgr[2];
-			data[i + 1] = bgr[1];
-			data[i + 2] = bgr[0];
-		}
-
-		return true;
-	}
-
 	static bool Decode(uint8_t* data, size_t size, size_t bits)
 	{
 		switch (bits)
 		{
 		case 24:
-			return Decode24(data, size);
+			return bgr2rgb(data, size);
 			break;
 		};
 
