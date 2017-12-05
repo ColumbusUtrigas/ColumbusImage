@@ -78,21 +78,6 @@ extern "C"
 		return true;
 	}
 
-	static bool Decode(uint8_t* data, size_t size, size_t bits)
-	{
-		switch (bits)
-		{
-		case 24:
-			return bgr2rgb(data, size);
-			break;
-		case 32:
-			return bgra2rgba(data, size);
-			break;
-		};
-
-		return true;
-	}
-
 	bool ClmbsImg_IsTGA(const char* file)
 	{
 		return true;
@@ -116,7 +101,12 @@ extern "C"
 		if (tga.image_type == 2)
 		{
 			fread(buffer, size, 1, fp);
-			Decode(buffer, size, tga.bits);
+
+			if (tga.bits == 24)
+				bgr2rgb(buffer, size);
+
+			if (tga.bits == 32)
+				bgra2rgba(buffer, size);
 		}
 
 		ret.w = tga.width;
@@ -135,10 +125,16 @@ extern "C"
 
 		TGA_HEADER tga = {0, 0, 2, 0, 0, 0, 0, 0, data.w, data.h, data.bpp * 8, 0};
 
+		size_t size = data.w * data.h * data.bpp;
 
-		uint8_t* buffer = (uint8_t*)malloc(data.w * data.h * data.bpp);
-		memcpy(buffer, data.data, data.w * data.h * data.bpp);
-		Decode(buffer, data.w * data.h * data.bpp, data.bpp * 8);
+		uint8_t* buffer = (uint8_t*)malloc(size);
+		memcpy(buffer, data.data, size);
+
+		if (tga.bits == 24)
+			rgb2bgr(buffer, size);
+
+		if (tga.bits == 32)
+			rgba2bgra(buffer, size);
 
 		WriteHeader(tga, fp);
 		fwrite(buffer, data.w * data.h * data.bpp, 1, fp);
