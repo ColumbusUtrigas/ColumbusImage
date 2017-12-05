@@ -67,8 +67,7 @@ extern "C"
 
 		png_uint_32 width, height;
 		int bit_depth;
-		png_get_IHDR(png_ptr, info_ptr, &width, &height, &bit_depth, &color_type,
-		&interlace_type, NULL, NULL);
+		png_get_IHDR(png_ptr, info_ptr, &width, &height, &bit_depth, &color_type, &interlace_type, NULL, NULL);
 
 		unsigned int row_bytes = png_get_rowbytes(png_ptr, info_ptr);
 
@@ -83,6 +82,11 @@ extern "C"
 		{
 			memcpy(ret.data + row_bytes * (ret.h - i), row_pointers[i], row_bytes);
 		}
+
+		if (ret.bpp == 3)
+			bgr2rgb(ret.data, ret.w * ret.h * ret.bpp);
+		if (ret.bpp == 4)
+			bgra2rgba(ret.data, ret.w * ret.h * ret.bpp);
 
 		png_destroy_read_struct(&png_ptr, &info_ptr, NULL);
 
