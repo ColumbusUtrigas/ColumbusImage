@@ -5,5 +5,5 @@ LIB = -lpng16
 all:
 	$(CC) $(SRC) -c $(LIB)
 	ar rcs libColumbusImage.a *.o 
-
+	rm -f *.o
 
