@@ -73,7 +73,12 @@ extern "C"
 
 		ret.w = width;
 		ret.h = height;
-		ret.bpp = bit_depth / 2;
+		if (color_type == PNG_COLOR_TYPE_RGBA)
+			ret.bpp = 4;
+		
+		if (color_type == PNG_COLOR_TYPE_RGB)
+			ret.bpp = 3;
+
 		ret.data = (uint8_t*)malloc(row_bytes * ret.h);
 
 		png_bytepp row_pointers = png_get_rows(png_ptr, info_ptr);
