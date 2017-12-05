@@ -27,6 +27,9 @@ extern "C"
 
 	int WriteInt32(const int32_t* data, FILE* fp);
 
+	int bgr2rgb(uint8_t* data, size_t size);
+	int bgra2rgba(uint8_t* data, size_t size);
+
 #ifdef __cplusplus
 }
 #endif

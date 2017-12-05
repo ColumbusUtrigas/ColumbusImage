@@ -60,6 +60,44 @@ extern "C"
 		return WriteBytes(data, sizeof(int32_t), fp);
 	}
 
+	int bgr2rgb(uint8_t* data, size_t size)
+	{
+		if (data == NULL) return 0;
+
+		uint8_t bgr[3];
+		for (int i = 0; i < size; i += 3)
+		{
+			bgr[0] = data[i + 0];
+			bgr[1] = data[i + 1];
+			bgr[2] = data[i + 2];
+
+			data[i + 0] = bgr[2];
+			data[i + 1] = bgr[1];
+			data[i + 2] = bgr[0];
+		}
+
+		return 1;
+	}
+
+	int bgra2rgba(uint8_t* data, size_t size)
+	{
+		if (data == NULL) return 0;
+
+		uint8_t bgr[3];
+		for (int i = 0; i < size; i += 4)
+		{
+			bgr[0] = data[i + 0];
+			bgr[1] = data[i + 1];
+			bgr[2] = data[i + 2];
+
+			data[i + 0] = bgr[2];
+			data[i + 1] = bgr[1];
+			data[i + 2] = bgr[0];
+		}
+
+		return 1;
+	}
+
 #ifdef __cplusplus
 }
 #endif
