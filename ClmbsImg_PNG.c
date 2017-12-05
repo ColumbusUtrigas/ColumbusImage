@@ -10,9 +10,19 @@ extern "C"
 {
 #endif
 
-	bool ClbmsImg_IsPNG(const char* file)
+	bool ClmbsImg_IsPNG(const char* file)
 	{
+		FILE* fp = fopen(file, "rb");
+		if (fp == NULL) return false;
 
+		uint8_t magic[4];
+		if (!ReadBytes(magic, sizeof(magic), fp)) return false;
+		fclose(fp);
+
+		if (magic[1] == 'P' &&
+			magic[2] == 'N' &&
+			magic[3] == 'G') return true;
+		else return false;
 	}
 
 #ifdef __cplusplus
