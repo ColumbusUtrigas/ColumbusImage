@@ -19,6 +19,7 @@ extern "C"
 
 	bool ClmbsImg_IsBMP(const char* file); //Check file format, if BMP, returns true
 	bool ClmbsImg_IsTGA(const char* file); //Check file format, if TGA, returns true
+	bool ClmbsImg_IsPNG(const char* fike); //Check file format, if PNG, returns true
 
 	ClmbsImg_Data ClmbsImg_LoadBMP(const char* file); //Load BMP image WITHOUT check
 	ClmbsImg_Data ClmbsImg_LoadTGA(const char* file); //Load TGA image WITHOUT check
