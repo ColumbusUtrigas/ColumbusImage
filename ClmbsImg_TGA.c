@@ -85,6 +85,9 @@ extern "C"
 		case 24:
 			return bgr2rgb(data, size);
 			break;
+		case 32:
+			return bgra2rgba(data, size);
+			break;
 		};
 
 		return true;
