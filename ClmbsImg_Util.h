@@ -29,6 +29,8 @@ extern "C"
 
 	int bgr2rgb(uint8_t* data, size_t size);
 	int bgra2rgba(uint8_t* data, size_t size);
+	int rgb2bgr(uint8_t* data, size_t size);
+	int rgba2bgra(uint8_t* data, size_t size);
 
 #ifdef __cplusplus
 }

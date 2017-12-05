@@ -99,6 +99,16 @@ extern "C"
 		return 1;
 	}
 
+	int rgb2bgr(uint8_t* data, size_t size)
+	{
+		return bgr2rgb(data, size);
+	}
+
+	int rgba2bgra(uint8_t* data, size_t size)
+	{
+		return bgra2rgba(data, size);
+	}
+
 #ifdef __cplusplus
 }
 #endif
