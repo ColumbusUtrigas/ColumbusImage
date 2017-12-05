@@ -28,6 +28,7 @@ extern "C"
 
 	bool ClmbsImg_SaveBMP(const char* file, ClmbsImg_Data data);
 	bool ClmbsImg_SaveTGA(const char* file, ClmbsImg_Data data);
+	bool ClmbsImg_SavePNG(const char* file, ClmbsImg_Data data);
 
 #ifdef __cplusplus
 }
