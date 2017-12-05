@@ -93,6 +93,7 @@ extern "C"
 			data[i + 0] = bgr[2];
 			data[i + 1] = bgr[1];
 			data[i + 2] = bgr[0];
+			data[i + 3] = data[i + 3];
 		}
 
 		return 1;
