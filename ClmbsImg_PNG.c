@@ -83,16 +83,21 @@ extern "C"
 			memcpy(ret.data + row_bytes * (ret.h - i), row_pointers[i], row_bytes);
 		}
 
-		if (ret.bpp == 3)
+		/*if (ret.bpp == 3)
 			bgr2rgb(ret.data, ret.w * ret.h * ret.bpp);
 		if (ret.bpp == 4)
-			bgra2rgba(ret.data, ret.w * ret.h * ret.bpp);
+			bgra2rgba(ret.data, ret.w * ret.h * ret.bpp);*/
 
 		png_destroy_read_struct(&png_ptr, &info_ptr, NULL);
 
 		fclose(fp);
 
 		return ret;
+	}
+
+	bool ClmbsImg_SavePNG(const char* file, ClmbsImg_Data data)
+	{
+		return true;
 	}
 
 #ifdef __cplusplus
