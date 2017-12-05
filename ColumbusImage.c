@@ -1,8 +1,21 @@
 #include "ColumbusImage.h"
+#include <stdlib.h>
 
 #ifdef __cplusplus
 extern "C"
 #endif
+
+	void ClmbsImg_Free(ClmbsImg_Data* data)
+	{
+		if (data == NULL) return;
+
+		data->w = 0;
+		data->h = 0;
+		data->bpp = 0;
+
+		if (data->data == NULL) return;
+		free(data->data);
+	}
 
 	ClmbsImg_Data ClmbsImg_Load(const char* file)
 	{

@@ -17,6 +17,8 @@ extern "C"
 		unsigned char* data; //Image pixel data
 	} ClmbsImg_Data;
 
+	void ClmbsImg_Free(ClmbsImg_Data* data);
+
 	bool ClmbsImg_IsBMP(const char* file); //Check file format, if BMP, returns true
 	bool ClmbsImg_IsTGA(const char* file); //Check file format, if TGA, returns true
 	bool ClmbsImg_IsPNG(const char* fike); //Check file format, if PNG, returns true
