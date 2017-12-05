@@ -89,7 +89,6 @@ extern "C"
 		}
 
 		png_destroy_read_struct(&png_ptr, &info_ptr, NULL);
-
 		fclose(fp);
 
 		return ret;
