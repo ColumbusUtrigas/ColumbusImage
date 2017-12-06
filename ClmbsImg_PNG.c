@@ -74,6 +74,12 @@ extern "C"
 			free(rows[i]);
 		}
 
+		if (png_ptr != NULL)
+			free(png_ptr);
+
+		if (info_ptr != NULL)
+			free(info_ptr);
+
 		fclose(fp);
 		free(rows);
 
