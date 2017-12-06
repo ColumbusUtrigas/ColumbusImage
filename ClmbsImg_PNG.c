@@ -88,6 +88,48 @@ extern "C"
 
 	bool ClmbsImg_SavePNG(const char* file, ClmbsImg_Data data)
 	{
+		FILE* fp = fopen(file, "wb");
+		if (fp == NULL) return false;
+
+		png_structp png = png_create_write_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
+		if (!png) return false;
+
+		png_infop info = png_create_info_struct(png);
+		if (!info)
+		{
+			png_destroy_write_struct(&png, &info);
+			return false;
+		}
+
+		png_init_io(png, fp);
+		int type = PNG_COLOR_TYPE_RGB;
+		if (data.bpp == 4)
+			type = PNG_COLOR_TYPE_RGBA;
+
+		png_set_IHDR(png, info, data.w, data.h, 8, type, PNG_INTERLACE_NONE,
+		PNG_COMPRESSION_TYPE_BASE, PNG_FILTER_TYPE_BASE);
+		png_colorp palette = (png_colorp)png_malloc(png, PNG_MAX_PALETTE_LENGTH * sizeof(png_color));
+		if (!palette)
+		{
+			fclose(fp);
+			png_destroy_write_struct(&png, &info);
+			return false;
+		}
+		png_set_PLTE(png, info, palette, PNG_MAX_PALETTE_LENGTH);
+		png_write_info(png, info);
+		png_set_packing(png);
+
+		png_bytepp rows = (png_bytepp)png_malloc(png, data.h * sizeof(png_bytep));
+		for (int i = 0; i < data.h; ++i)
+			rows[i] = (png_bytep)(data.data + (data.h - i) * data.w * data.bpp);
+
+		png_write_image(png, rows);
+		png_write_end(png, info);
+		png_free(png, palette);
+		png_destroy_write_struct(&png, &info);
+
+		fclose(fp);
+		free(rows);
 		return true;
 	}
 
