@@ -30,66 +30,52 @@ extern "C"
 	{
 		ClmbsImg_Data ret;
 
-		FILE *fp = fopen(file, "rb");
+		FILE* fp = fopen(file, "rb");
 		if (fp == NULL) return ret;
 
-		png_structp png_ptr;
+		png_structp	png_ptr;
 		png_infop info_ptr;
-		unsigned int sig_read = 0;
-		int color_type, interlace_type;
-
-		png_ptr = png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
-
-		if (png_ptr == NULL)
-		{
-			fclose(fp);
-			return ret;
-		}
-
-		info_ptr = png_create_info_struct(png_ptr);
-		if (info_ptr == NULL)
-		{
-			fclose(fp);
-			png_destroy_read_struct(&png_ptr, NULL, NULL);
-			return ret;
-		}
-
-		if (setjmp(png_jmpbuf(png_ptr)))
-		{
-			png_destroy_read_struct(&png_ptr, &info_ptr, NULL);
-			fclose(fp);
-			return ret;
-		}
-
-		png_init_io(png_ptr, fp);
-		png_set_sig_bytes(png_ptr, sig_read);
-		png_read_png(png_ptr, info_ptr, PNG_TRANSFORM_STRIP_16 | PNG_TRANSFORM_PACKING | PNG_TRANSFORM_EXPAND, NULL);
-
-		png_uint_32 width, height;
+		png_uint_32 width;
+		png_uint_32 height;
 		int bit_depth;
-		png_get_IHDR(png_ptr, info_ptr, &width, &height, &bit_depth, &color_type, &interlace_type, NULL, NULL);
+		int color_type;
+		int interlace_method;
+		int compression_method;
+		int filter_method;
 
-		unsigned int row_bytes = png_get_rowbytes(png_ptr, info_ptr);
+		png_bytepp rows;
+
+		png_ptr = png_create_read_struct (PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
+		if (! png_ptr) return ret;
+
+		info_ptr = png_create_info_struct (png_ptr);
+		if (! png_ptr) return ret;
+
+		png_init_io (png_ptr, fp);
+		png_read_png (png_ptr, info_ptr, 0, 0);
+		png_get_IHDR (png_ptr, info_ptr, &width, &height, &bit_depth,
+		&color_type, &interlace_method, &compression_method, &filter_method);
+
+		rows = png_get_rows (png_ptr, info_ptr);
+		int rowbytes;
+		rowbytes = png_get_rowbytes (png_ptr, info_ptr);
 
 		ret.w = width;
 		ret.h = height;
-		if (color_type == PNG_COLOR_TYPE_RGBA)
-			ret.bpp = 4;
-		
 		if (color_type == PNG_COLOR_TYPE_RGB)
 			ret.bpp = 3;
+		if (color_type == PNG_COLOR_TYPE_RGBA)
+			ret.bpp = 4;
+		ret.data = (uint8_t*)malloc(ret.w * ret.h * ret.bpp);;
 
-		ret.data = (uint8_t*)malloc(row_bytes * ret.h);
-
-		png_bytepp row_pointers = png_get_rows(png_ptr, info_ptr);
-
-		for (int i = 0; i < ret.h; i++)
+		for (int i = 0; i < height; i++)
 		{
-			memcpy(ret.data + row_bytes * (ret.h - i), row_pointers[i], row_bytes);
+			memcpy(ret.data + rowbytes * i, rows[height - i - 1], rowbytes);
+			free(rows[i]);
 		}
 
-		png_destroy_read_struct(&png_ptr, &info_ptr, NULL);
 		fclose(fp);
+		free(rows);
 
 		return ret;
 	}
