@@ -120,8 +120,12 @@ extern "C"
 		png_set_packing(png);
 
 		png_bytepp rows = (png_bytepp)png_malloc(png, data.h * sizeof(png_bytep));
-		for (int i = 0; i < data.h; ++i)
-			rows[i] = (png_bytep)(data.data + (data.h - i) * data.w * data.bpp);
+		int rowbytes = data.w * data.bpp;
+		for (int i = 0; i < data.h; i++)
+		{
+			rows[i] = (png_bytep)malloc(rowbytes);
+			memcpy(rows[i], data.data + (data.h - i - 1) * rowbytes, rowbytes);
+		}
 
 		png_write_image(png, rows);
 		png_write_end(png, info);
@@ -129,6 +133,11 @@ extern "C"
 		png_destroy_write_struct(&png, &info);
 
 		fclose(fp);
+		for (int i = 0; i < data.h; i++)
+		{
+			free(rows[i]);
+		}
+		
 		free(rows);
 		return true;
 	}
