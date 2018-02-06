@@ -32,6 +32,10 @@ extern "C"
 	int rgb2bgr(uint8_t* data, size_t size);
 	int rgba2bgra(uint8_t* data, size_t size);
 
+	int flipX(uint8_t* aData, size_t aWidth, size_t aHeight, size_t aBPP);
+	int flipY(uint8_t* aData, size_t aWidth, size_t aHeight, size_t aBPP);
+	int flipXY(uint8_t* aData, size_t aWidth, size_t aHeight, size_t aBPP);
+
 #ifdef __cplusplus
 }
 #endif

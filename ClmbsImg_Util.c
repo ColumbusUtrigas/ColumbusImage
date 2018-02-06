@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
+#include <string.h>
 
 #ifdef __cplusplus
 extern "C"
@@ -107,6 +108,66 @@ extern "C"
 	int rgba2bgra(uint8_t* data, size_t size)
 	{
 		return bgra2rgba(data, size);
+	}
+
+	int flipX(uint8_t* aData, size_t aWidth, size_t aHeight, size_t aBPP)
+	{
+		if (aData == NULL) return 0;
+
+		const size_t stride = aWidth * aBPP;
+		uint8_t* row;
+		uint8_t* pixel = (uint8_t*)malloc(aBPP);
+
+		for (size_t i = 0; i < aHeight; i++)
+		{
+			row = &aData[i * stride];
+
+			for (size_t j = 0; j < aWidth / 2; j++)
+			{
+				memcpy(pixel, &row[j * aBPP], aBPP);
+				memcpy(&row[j * aBPP], &row[(aWidth - j) * aBPP], aBPP);
+				memcpy(&row[(aWidth - j) * aBPP], pixel, aBPP);
+			}
+		}
+
+		return 1;
+	}
+
+	int flipY(uint8_t* aData, size_t aWidth, size_t aHeight, size_t aBPP)
+	{
+		if (aData == NULL) return 0;
+
+		const size_t stride = aWidth * aBPP;
+		uint8_t* row = (uint8_t*)malloc(stride);
+
+		for (size_t i = 0; i < aHeight / 2; i++)
+		{
+			memcpy(row, &aData[i * stride], stride);
+			memcpy(&aData[i * stride], &aData[(aHeight - i) * stride], stride);
+			memcpy(&aData[(aHeight - i) * stride], row, stride);
+		}
+		free(row);
+
+		return 1;
+	}
+
+	int flipXY(uint8_t* aData, size_t aWidth, size_t aHeight, size_t aBPP)
+	{
+		if (aData == NULL) return 0;
+
+		const size_t size = aWidth * aHeight;
+		//uint8_t* pixel = new uint8_t[aBPP];
+		uint8_t* pixel = (uint8_t*)malloc(sizeof(uint8_t) * aBPP);
+
+		for (size_t i = 0; i < size / 2; i++)
+		{
+			memcpy(pixel, &aData[i * aBPP], aBPP);
+			memcpy(&aData[i * aBPP], &aData[(size - i) * aBPP], aBPP);
+			memcpy(&aData[(size - i) * aBPP], pixel, aBPP);
+		}
+		free(pixel);
+
+		return 1;
 	}
 
 #ifdef __cplusplus
