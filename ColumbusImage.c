@@ -27,6 +27,12 @@ extern "C"
 		if (ClmbsImg_IsPNG(file))
 			return ClmbsImg_LoadPNG(file);
 
+		if (ClmbsImg_IsJPG(file))
+			return ClmbsImg_LoadJPG(file);
+
+		if (ClmbsImg_IsTIF(file))
+			return ClmbsImg_LoadTIF(file);
+
 		if (ClmbsImg_IsTGA(file))
 			return ClmbsImg_LoadTGA(file);
 
