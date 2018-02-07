@@ -4,3 +4,5 @@ Simple C/C++ Library for image loading/saving
 * BMP (read/write)
 * TGA (read/write)
 * PNG (read/write)
+* JPG (read/write)
+* TIF (read/write)
