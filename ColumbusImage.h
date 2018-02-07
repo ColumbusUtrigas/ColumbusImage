@@ -21,16 +21,22 @@ extern "C"
 
 	bool ClmbsImg_IsBMP(const char* file); //Check file format, if BMP, returns true
 	bool ClmbsImg_IsTGA(const char* file); //Check file format, if TGA, returns true
-	bool ClmbsImg_IsPNG(const char* fike); //Check file format, if PNG, returns true
+	bool ClmbsImg_IsPNG(const char* file); //Check file format, if PNG, returns true
+	bool ClmbsImg_IsJPG(const char* file); //Check file format, if JPG, returns true
+	bool ClmbsImg_IsTIF(const char* file); //Check file format, if TIF, returns true
 
 	ClmbsImg_Data ClmbsImg_LoadBMP(const char* file); //Load BMP image WITHOUT check
 	ClmbsImg_Data ClmbsImg_LoadTGA(const char* file); //Load TGA image WITHOUT check
 	ClmbsImg_Data ClmbsImg_LoadPNG(const char* file); //Load PNG image WITHOUT check
+	ClmbsImg_Data ClmbsImg_LoadJPG(const char* file); //Load JPG image WITHOUT check
+	ClmbsImg_Data ClmbsImg_LoadTIF(const char* file); //Load TIF image WITHOUT check
 	ClmbsImg_Data ClmbsImg_Load(const char* file); //Check and load all supported iamge formats
 
 	bool ClmbsImg_SaveBMP(const char* file, ClmbsImg_Data data);
 	bool ClmbsImg_SaveTGA(const char* file, ClmbsImg_Data data);
 	bool ClmbsImg_SavePNG(const char* file, ClmbsImg_Data data);
+	bool ClmbsImg_SaveJPG(const char* file, ClmbsImg_Data data, unsigned int quality);
+	bool ClmbsImg_SaveTIF(const char* file, ClmbsImg_Data data);
 
 #ifdef __cplusplus
 }
